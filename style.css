@@ -1,0 +1,327 @@
+/* =========================================================================
+   Unknown History — Studio Design System
+   Dark + light themes, modern AI product aesthetic.
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap');
+
+/* ----------------------------- Tokens ---------------------------------- */
+:root {
+  --gold: #d4af37;
+  --gold-soft: #e8c86a;
+  --gold-deep: #b8912a;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Dark theme (default) */
+[data-theme="dark"], :root {
+  --bg: #0a0c11;
+  --bg-grad-1: rgba(212,175,55,0.10);
+  --bg-grad-2: rgba(80,120,255,0.06);
+  --surface: rgba(255,255,255,0.035);
+  --surface-2: rgba(255,255,255,0.06);
+  --surface-3: rgba(255,255,255,0.09);
+  --border: rgba(255,255,255,0.07);
+  --border-gold: rgba(212,175,55,0.22);
+  --text: #e9e9ec;
+  --text-muted: #8b8f9a;
+  --text-dim: #5a5f6a;
+  --shadow: 0 20px 50px rgba(0,0,0,0.45);
+  --bar-bg: rgba(12,14,19,0.82);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #f7f6f3;
+  --bg-grad-1: rgba(212,175,55,0.14);
+  --bg-grad-2: rgba(120,150,255,0.08);
+  --surface: rgba(255,255,255,0.75);
+  --surface-2: rgba(255,255,255,0.92);
+  --surface-3: rgba(245,243,238,0.95);
+  --border: rgba(20,20,30,0.08);
+  --border-gold: rgba(184,145,42,0.35);
+  --text: #15171d;
+  --text-muted: #5c616c;
+  --text-dim: #9aa0ab;
+  --shadow: 0 20px 50px rgba(20,20,30,0.10);
+  --bar-bg: rgba(255,255,255,0.82);
+}
+
+/* ----------------------------- Base ------------------------------------ */
+html, body, [class*="css"] { font-family: var(--font-sans); }
+
+.stApp {
+  background:
+    radial-gradient(1200px 600px at 12% -10%, var(--bg-grad-1), transparent 62%),
+    radial-gradient(900px 500px at 100% 0%, var(--bg-grad-2), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  transition: background .35s var(--ease), color .35s var(--ease);
+}
+
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding-top: 2rem; padding-bottom: 7rem; max-width: 1220px; }
+
+h1, h2, h3 { font-family: var(--font-display); color: var(--text); letter-spacing: .4px; }
+h1 { font-size: 2.5rem; line-height: 1.1; }
+h2 { font-size: 1.55rem; margin-top: 1.6rem; }
+h3 { font-size: 1.2rem; }
+p, span, label, div { color: var(--text); }
+.muted { color: var(--text-muted); font-size: .9rem; }
+.dim { color: var(--text-dim); font-size: .8rem; }
+
+/* ----------------------------- Hero ------------------------------------ */
+.hero {
+  position: relative;
+  padding: 2.4rem 2.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-gold);
+  background:
+    linear-gradient(180deg, rgba(212,175,55,0.09), rgba(212,175,55,0.01) 60%),
+    var(--surface);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: background .35s var(--ease), border-color .35s var(--ease);
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: -2px;
+  background: radial-gradient(600px 200px at 20% 0%, rgba(212,175,55,0.28), transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold); font-weight: 600;
+  padding: .32rem .75rem; border-radius: 999px;
+  border: 1px solid var(--border-gold);
+  background: rgba(212,175,55,0.08);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem; font-weight: 700; line-height: 1.05;
+  margin: .9rem 0 .5rem 0;
+  background: linear-gradient(120deg, var(--text) 15%, var(--gold-soft) 55%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 1.02rem; max-width: 720px; line-height: 1.55;
+}
+
+/* --------------------------- Agent chips -------------------------------- */
+.agents { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.3rem; }
+.agent-chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: .38rem .85rem;
+  font-size: .82rem; font-weight: 500;
+  transition: all .18s var(--ease);
+}
+.agent-chip:hover {
+  border-color: var(--border-gold);
+  color: var(--gold-soft);
+  background: rgba(212,175,55,0.07);
+  transform: translateY(-1px);
+}
+
+/* ------------------------------ Cards ---------------------------------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.25rem;
+  margin-bottom: .9rem;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  transition: background .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
+}
+.card-title {
+  font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600; margin-bottom: .55rem;
+}
+
+/* ------------------------------ Stats ---------------------------------- */
+.stat-row { display: flex; gap: .8rem; margin-top: .4rem; }
+.stat {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: .7rem .85rem;
+  transition: background .35s var(--ease);
+}
+.stat-label { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.stat-value { font-size: 1.35rem; font-weight: 600; color: var(--gold-soft); margin-top: .15rem; }
+
+/* --------------------------- Status pills ------------------------------ */
+.status {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .32rem .72rem; border-radius: 999px;
+  font-size: .78rem; font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.dot.live { animation: pulse 1.4s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* ------------------------------ Buttons -------------------------------- */
+.stButton > button {
+  background: linear-gradient(135deg, #e8c86a 0%, #d4af37 55%, #b8912a 100%);
+  color: #0a0c11;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: .8rem 1.5rem;
+  font-size: .98rem;
+  letter-spacing: .04em;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.25);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.stButton > button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(212,175,55,0.38);
+  color: #0a0c11;
+}
+.stButton > button:active { transform: translateY(0); }
+
+/* Secondary buttons (sidebar) */
+section[data-testid="stSidebar"] .stButton > button {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  font-weight: 600;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+  border-color: var(--border-gold);
+  color: var(--gold-soft);
+  box-shadow: none;
+}
+
+.stDownloadButton > button {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all .18s var(--ease);
+}
+.stDownloadButton > button:hover {
+  border-color: var(--gold);
+  color: var(--gold-soft);
+}
+
+/* ------------------------------ Inputs --------------------------------- */
+.stSelectbox [data-baseweb="select"] > div {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text) !important;
+}
+.stSelectbox [data-baseweb="select"] svg { fill: var(--text-muted) !important; }
+
+/* ------------------------------ Sidebar -------------------------------- */
+section[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%);
+  border-right: 1px solid var(--border);
+}
+section[data-testid="stSidebar"] .block-container { padding-top: 1.4rem; }
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 { color: var(--gold-soft); }
+
+/* ----------------------------- Progress -------------------------------- */
+.stProgress > div > div > div > div {
+  background: linear-gradient(90deg, var(--gold), var(--gold-soft)) !important;
+}
+
+/* ------------------------------ Console -------------------------------- */
+.stCode, pre {
+  background: #070809 !important;
+  border: 1px solid rgba(255,255,255,0.05) !important;
+  border-radius: var(--radius-md) !important;
+}
+[data-theme="light"] .stCode,
+[data-theme="light"] pre {
+  background: #1a1c22 !important;
+  border-color: rgba(0,0,0,0.15) !important;
+}
+
+/* ------------------------------- Warn ---------------------------------- */
+.warn {
+  color: #ffb020;
+  background: rgba(255,176,32,0.08);
+  border: 1px solid rgba(255,176,32,0.28);
+  border-radius: var(--radius-md);
+  padding: .7rem .9rem;
+  font-size: .88rem;
+}
+[data-theme="light"] .warn {
+  color: #8a5a00;
+  background: rgba(255,176,32,0.14);
+  border-color: rgba(184,120,0,0.35);
+}
+
+/* ------------------------------ Divider -------------------------------- */
+.gold-line {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
+  margin: 1.2rem 0;
+}
+
+/* =========================================================================
+   BOTTOM ACTION BAR
+   ========================================================================= */
+.bottom-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 999;
+  backdrop-filter: blur(20px) saturate(140%);
+  background: var(--bar-bg);
+  border-top: 1px solid var(--border-gold);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.25);
+  padding: .85rem 1.6rem;
+  transition: background .35s var(--ease);
+}
+.bottom-bar-inner {
+  max-width: 1220px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.bottom-bar-left {
+  display: flex; align-items: center; gap: .8rem;
+  font-size: .85rem; color: var(--text-muted);
+}
+.bottom-bar-left strong { color: var(--text); font-weight: 600; }
+.bottom-bar-actions { display: flex; gap: .6rem; align-items: center; }
+
+/* Fixed bottom bar must not be covered by Streamlit's own download button block */
+.stDownloadButton { margin-bottom: 0; }
+
+/* ------------------------------ Responsive ----------------------------- */
+@media (max-width: 820px) {
+  .hero { padding: 1.6rem 1.3rem; }
+  .hero-title { font-size: 2.1rem; }
+  .bottom-bar-inner { flex-direction: column; align-items: stretch; }
+  .bottom-bar-actions { justify-content: stretch; }
+  .bottom-bar-actions > * { flex: 1; }
+  .block-container { padding-bottom: 9rem; }
+}
