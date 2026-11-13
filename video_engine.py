@@ -42,7 +42,7 @@ WORK_DIR.mkdir(exist_ok=True)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "")
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-120b"
 TTS_VOICE = "en-GB-RyanNeural"
 TTS_RATE = "-5%"
 PIXABAY_VIDEO_URL = "https://pixabay.com/api/videos/"
