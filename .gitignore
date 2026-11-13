@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.*
+
+# Runtime artifacts
+work/
+*.mp4
+*.mp3
+*.png
+history_database.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.streamlit/secrets.toml
+
+# OS
+Thumbs.db
+.DS_Store
