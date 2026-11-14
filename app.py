@@ -1,6 +1,6 @@
 """
 Unknown History - Streamlit control room.
-Dark cinematic theme: Gold #d4af37 on Black #0e1117.
+Modern AI studio UI with light/dark themes and a fixed bottom action bar.
 """
 
 import os
@@ -12,6 +12,9 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent))
 import video_engine as ve
 
+BASE_DIR = Path(__file__).parent
+CSS_FILE = BASE_DIR / "style.css"
+
 st.set_page_config(
     page_title="Unknown History Studio",
     page_icon="🏺",
@@ -20,66 +23,66 @@ st.set_page_config(
 )
 
 # --------------------------------------------------------------------------- #
-# Cinematic dark theme
+# Theme handling (?theme=dark|light)
 # --------------------------------------------------------------------------- #
+DEFAULT_THEME = "dark"
+theme = st.query_params.get("theme", DEFAULT_THEME)
+if theme not in ("dark", "light"):
+    theme = DEFAULT_THEME
+
+# --------------------------------------------------------------------------- #
+# Inject CSS + theme attribute
+# --------------------------------------------------------------------------- #
+css = CSS_FILE.read_text(encoding="utf-8") if CSS_FILE.exists() else ""
 st.markdown(
-    """
-    <style>
-      .stApp { background-color: #0e1117; color: #e8e8e8; }
-      h1, h2, h3 { color: #d4af37; font-family: Georgia, serif; letter-spacing: 1px; }
-      .gold-line { border: none; border-top: 1px solid #d4af37; opacity: .5; }
-      .stButton>button {
-          background-color: #d4af37; color: #0e1117; font-weight: bold;
-          border: none; border-radius: 6px; padding: .6rem 1.6rem;
-          font-size: 1.05rem; letter-spacing: .5px;
-      }
-      .stButton>button:hover { background-color: #f0d060; color: #0e1117; }
-      .card {
-          background: #161a23; border: 1px solid #2a2f3a; border-radius: 12px;
-          padding: 1rem 1.2rem; margin-bottom: .8rem;
-      }
-      .agent-chip {
-          display: inline-block; background: #1f2430; border: 1px solid #d4af37;
-          color: #d4af37; border-radius: 999px; padding: .15rem .8rem;
-          margin: .15rem .25rem .15rem 0; font-size: .85rem;
-      }
-      .warn { color: #ffb020; }
-      footer {visibility: hidden;}
-    </style>
+    f"""
+    <style>{css}</style>
+    <script>
+      document.documentElement.setAttribute('data-theme', '{theme}');
+    </script>
     """,
     unsafe_allow_html=True,
 )
 
 # --------------------------------------------------------------------------- #
-# Header
+# Hero
 # --------------------------------------------------------------------------- #
-st.title("🏺 Unknown History — Autonomous AI Video Studio")
-st.markdown('<hr class="gold-line">', unsafe_allow_html=True)
-st.caption(
-    "One click: research a forgotten story → write the script → narrate → "
-    "fetch real 4K stock footage → render a cinematic documentary."
-)
 st.markdown(
-    '<span class="agent-chip">🧠 Ideation Agent</span>'
-    '<span class="agent-chip">✍️ Scriptwriter AI</span>'
-    '<span class="agent-chip">🎙️ Voice AI</span>'
-    '<span class="agent-chip">🎬 Video Production AI</span>'
-    '<span class="agent-chip">🖼️ Thumbnail AI</span>'
-    '<span class="agent-chip">📈 Analytics & Growth Agent</span>',
+    """
+    <div class="hero">
+      <span class="hero-eyebrow">🏺 Unknown History · Autonomous Studio</span>
+      <div class="hero-title">One click. A forgotten story, rendered.</div>
+      <p class="hero-sub">
+        An autonomous pipeline researches a forgotten story, writes the script,
+        narrates it, sources real cinematic footage, and renders a documentary —
+        without a human in the loop.
+      </p>
+      <div class="agents">
+        <span class="agent-chip">🧠 Ideation Agent</span>
+        <span class="agent-chip">✍️ Scriptwriter AI</span>
+        <span class="agent-chip">🎙️ Voice AI</span>
+        <span class="agent-chip">🎬 Video Production AI</span>
+        <span class="agent-chip">🖼️ Thumbnail AI</span>
+        <span class="agent-chip">📈 Analytics &amp; Growth Agent</span>
+      </div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
-st.markdown('<hr class="gold-line">', unsafe_allow_html=True)
 
 # --------------------------------------------------------------------------- #
-# Sidebar — video production settings
+# Sidebar — production settings + theme toggle
 # --------------------------------------------------------------------------- #
 with st.sidebar:
-    st.header("🎛️ Video production settings")
+    st.markdown("### 🎛️ Production settings")
+    st.markdown('<p class="muted">Configure the next documentary run.</p>', unsafe_allow_html=True)
+
     duration_label = st.selectbox(
         "Documentary length",
         options=list(ve.DURATION_PRESETS.keys()),
         format_func=lambda k: ve.DURATION_PRESETS[k]["label"],
         index=0,
+        label_visibility="collapsed",
     )
     preset = ve.DURATION_PRESETS[duration_label]
     st.caption(
@@ -91,14 +94,27 @@ with st.sidebar:
     )
     if duration_label == "longform":
         st.markdown(
-            '<p class="warn">⚠️ 40-minute videos require much more research, '
-            "production time and quality control.</p>",
+            '<div class="warn">⚠️ 40-minute videos require much more research, '
+            "production time and quality control.</div>",
             unsafe_allow_html=True,
         )
 
     st.markdown('<hr class="gold-line">', unsafe_allow_html=True)
-    st.header("🗂️ Memory")
-    if st.button("Show topic history"):
+    st.markdown("### 🎨 Appearance")
+    new_theme = st.radio(
+        "Theme",
+        options=["dark", "light"],
+        index=0 if theme == "dark" else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    if new_theme != theme:
+        st.query_params["theme"] = new_theme
+        st.rerun()
+
+    st.markdown('<hr class="gold-line">', unsafe_allow_html=True)
+    st.markdown("### 🗂️ Memory")
+    if st.button("Show topic history", use_container_width=True):
         used = ve.read_database()
         if used:
             for t in reversed(used[-30:]):
@@ -108,24 +124,102 @@ with st.sidebar:
     st.caption(f"Database: `{ve.DB_FILE.name}` — topics never repeat.")
 
 # --------------------------------------------------------------------------- #
-# Main — generate
+# Main layout: stats + console
 # --------------------------------------------------------------------------- #
-col1, col2 = st.columns([2, 1])
-with col1:
-    generate = st.button("▶ GENERATE DOCUMENTARY", use_container_width=True)
-with col2:
-    st.metric("Target runtime", f"{preset['minutes']} min")
-    st.metric("Planned scenes", preset["scenes"])
+col_run, col_stats = st.columns([2, 1.1], gap="large")
 
+with col_stats:
+    st.markdown(
+        f"""
+        <div class="card">
+          <div class="card-title">Run configuration</div>
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-label">Runtime</div>
+              <div class="stat-value">{preset['minutes']} min</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Scenes</div>
+              <div class="stat-value">{preset['scenes']}</div>
+            </div>
+          </div>
+          <div style="margin-top:.8rem;">
+            <span class="status"><span class="dot"></span> Pipeline ready</span>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col_run:
+    st.markdown(
+        """
+        <div class="card">
+          <div class="card-title">Studio console</div>
+          <p class="muted" style="margin:0;">
+            Use the action bar at the bottom of the screen to start a render.
+          </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# --------------------------------------------------------------------------- #
+# Bottom action bar (visual shell) + real Streamlit button below it
+# --------------------------------------------------------------------------- #
+st.markdown(
+    f"""
+    <div class="bottom-bar">
+      <div class="bottom-bar-inner">
+        <div class="bottom-bar-left">
+          <span class="status"><span class="dot"></span> Studio ready</span>
+          <span><strong>{preset['minutes']} min</strong> · {preset['scenes']} scenes</span>
+        </div>
+        <div class="bottom-bar-actions" id="bottom-actions"></div>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# The actual Streamlit button lives in a fixed-position wrapper we inject.
+# Streamlit cannot render a button inside raw HTML, so we place it in a
+# container that the CSS pins to the bottom bar's action area.
+st.markdown('<div id="action-slot"></div>', unsafe_allow_html=True)
+
+with st.container():
+    st.markdown(
+        """
+        <style>
+          /* Pin the first button container inside the main area to the bottom bar */
+          div[data-testid="stVerticalBlock"] > div:has(> div > .stButton) { }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    generate = st.button("▶ GENERATE DOCUMENTARY", use_container_width=True)
+
+# --------------------------------------------------------------------------- #
+# Pipeline execution
+# --------------------------------------------------------------------------- #
 if generate:
     if not os.getenv("GROQ_API_KEY") or not os.getenv("PIXABAY_API_KEY"):
         st.error(
-            "Missing API keys. Copy `.env.example` to `.env` and set "
-            "GROQ_API_KEY and PIXABAY_API_KEY, then restart the app."
+            "Missing API keys. Add GROQ_API_KEY and PIXABAY_API_KEY to your "
+            "Streamlit secrets, then restart the app."
         )
         st.stop()
-    log_box = st.empty()
+
+    st.markdown('<hr class="gold-line">', unsafe_allow_html=True)
+
+    status_ph = st.empty()
+    status_ph.markdown(
+        '<span class="status"><span class="dot live"></span> Studio is working…</span>',
+        unsafe_allow_html=True,
+    )
+
     bar = st.progress(0)
+    log_box = st.empty()
     logs = []
 
     def progress_cb(msg):
@@ -136,12 +230,18 @@ if generate:
         bar.progress(min(1.0, max(0.0, frac)))
 
     try:
-        with st.spinner("The studio is working..."):
+        with st.spinner("Rendering your documentary…"):
             out_path, topic_info = ve.run_pipeline(
                 duration_label, progress_cb=progress_cb, fraction_cb=fraction_cb
             )
+
+        status_ph.markdown(
+            '<span class="status"><span class="dot"></span> Render complete</span>',
+            unsafe_allow_html=True,
+        )
         st.success(f"🎬 '{topic_info['topic']}' is ready.")
         st.balloons()
+
         with open(out_path, "rb") as fh:
             st.download_button(
                 "⬇ Download MP4",
@@ -150,15 +250,34 @@ if generate:
                 mime="video/mp4",
                 use_container_width=True,
             )
-        st.warning(
-            "After uploading to YouTube, tick the **'Altered Content'** label "
-            "(AI-generated disclosure)."
+
+        st.markdown(
+            '<div class="warn">After uploading to YouTube, tick the '
+            "<b>'Altered Content'</b> label (AI-generated disclosure).</div>",
+            unsafe_allow_html=True,
         )
+
     except Exception as e:
+        status_ph.markdown(
+            '<span class="status" style="border-color:rgba(255,80,80,.35);color:#ff9d9d;">'
+            '<span class="dot" style="background:#ff5a5a;box-shadow:0 0 8px #ff5a5a;"></span>'
+            " Pipeline failed</span>",
+            unsafe_allow_html=True,
+        )
         st.error(f"Pipeline failed: {e}")
         with st.expander("Full log"):
             st.code("\n".join(logs))
 
 else:
-    st.info("Click **GENERATE DOCUMENTARY** to let the studio work. "
-            "Every run picks a topic never told before.")
+    st.markdown(
+        """
+        <div class="card" style="margin-top:1rem;">
+          <div class="card-title">Idle</div>
+          <p style="margin:0;color:var(--text-muted);">
+            Press <b style="color:var(--gold-soft);">GENERATE DOCUMENTARY</b> to let the studio work.
+            Every run picks a topic never told before.
+          </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
