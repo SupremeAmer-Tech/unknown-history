@@ -26,6 +26,14 @@ from moviepy.editor import (
 )
 from PIL import Image, ImageDraw, ImageFont
 
+# --------------------------------------------------------------------------- #
+# Pillow 10+ compatibility shim for MoviePy 1.0.3
+# MoviePy internally calls Image.ANTIALIAS, which Pillow removed in 10.0.0.
+# Map it to LANCZOS so MoviePy's resize path keeps working unchanged.
+# --------------------------------------------------------------------------- #
+if not hasattr(Image, "ANTIALIAS"):
+    Image.ANTIALIAS = Image.LANCZOS
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
